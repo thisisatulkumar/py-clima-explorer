@@ -19,7 +19,7 @@ HEADER_CSS = """
 """
 
 # --- 1. Gemini Configuration (module-level, reused across calls) ---
-genai.configure(api_key="AIzaSyCSiAG7Se89BuybxXILY6VF3FJOX2o1MyI")
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
 model = genai.GenerativeModel(
     model_name="gemini-3.1-flash-lite-preview",
