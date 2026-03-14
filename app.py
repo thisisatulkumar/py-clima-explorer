@@ -88,8 +88,12 @@ def main():
         compare_datasets.app()
     elif page_key == "climate_time_machine":
         # Standalone script page – import then reload so it executes on each selection.
-        ctm_module = importlib.import_module("pages.climate_time_machine")
-        importlib.reload(ctm_module)
+        import sys
+        if "pages.climate_time_machine" not in sys.modules:
+            ctm_module = importlib.import_module("pages.climate_time_machine")
+        else:
+            ctm_module = sys.modules["pages.climate_time_machine"]
+            importlib.reload(ctm_module)
     elif page_key == "chatbot":
         chatbot_module = importlib.import_module("pages.chatbot")
         chatbot_module.app()
