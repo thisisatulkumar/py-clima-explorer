@@ -9,20 +9,11 @@ import xarray as xr
 import tempfile
 import os
 
-# ══════════════════════════════════════════════════════════════
-# PAGE CONFIG
-# ══════════════════════════════════════════════════════════════
-st.set_page_config(
-    page_title="ClimaDuel — Dataset Comparison",
-    page_icon="🔬",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 # ══════════════════════════════════════════════════════════════
-# CSS
+# CSS (rendered inside app)
 # ══════════════════════════════════════════════════════════════
-st.markdown("""
+_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -189,7 +180,7 @@ st.markdown("""
 h1,h2,h3,h4 { color: #e8f0ff !important; }
 p, label, .stMarkdown { color: var(--col-neu) !important; }
 </style>
-""", unsafe_allow_html=True)
+"""
 
 
 # ══════════════════════════════════════════════════════════════
@@ -742,11 +733,15 @@ def generate_insights(r) -> list:
     ]
 
 
-# ══════════════════════════════════════════════════════════════
-# SIDEBAR
-# ══════════════════════════════════════════════════════════════
-with st.sidebar:
-    st.markdown("""
+def app():
+    """Render the ClimaDuel dataset comparison page."""
+    st.markdown(_CSS, unsafe_allow_html=True)
+
+    # ══════════════════════════════════════════════════════════════
+    # SIDEBAR
+    # ══════════════════════════════════════════════════════════════
+    with st.sidebar:
+        st.markdown("""
     <div style='font-family:"Bebas Neue",sans-serif; font-size:1.6rem;
                 letter-spacing:2px; color:#00e5ff; margin-bottom:0.2rem;'>
     CLIMADUEL
@@ -754,129 +749,129 @@ with st.sidebar:
     <div style='font-size:0.75rem; color:#5a6a8a; margin-bottom:1rem;'>
     Dataset Comparison Engine
     </div>
-    """, unsafe_allow_html=True)
-    st.divider()
+        """, unsafe_allow_html=True)
+        st.divider()
 
-    variable = select(
-        label="🌡️ Climate Variable",
-        options=["Temperature", "Precipitation", "Wind Speed"],
-        key="climate_variable_select",
-    )
+        variable = select(
+            label="🌡️ Climate Variable",
+            options=["Temperature", "Precipitation", "Wind Speed"],
+            key="climate_variable_select",
+        )
 
-    # ── DATASET A ──
-    st.markdown("---")
-    st.markdown("""
+        # ── DATASET A ──
+        st.markdown("---")
+        st.markdown("""
     <div style='border-left:3px solid #00e5ff; padding:0.4rem 0.8rem;
                 background:rgba(0,229,255,0.06); border-radius:0 8px 8px 0; margin-bottom:0.5rem;'>
       <span style='font-family:"Bebas Neue",sans-serif; font-size:1.1rem;
                    letter-spacing:2px; color:#00e5ff;'>🔵 DATASET A</span>
     </div>
-    """, unsafe_allow_html=True)
-    ds_a    = None
-    label_a = "Dataset A"
+        """, unsafe_allow_html=True)
+        ds_a    = None
+        label_a = "Dataset A"
 
-    up_a = st.file_uploader("Upload Dataset A (.nc)", type=["nc"], key="up_a")
-    if up_a:
-        ds_a    = load_nc(up_a.read(), up_a.name)
-        nvars   = list(ds_a.data_vars)
-        var_a   = select(
-            label="Variable A",
-            options=nvars,
-            key="va",
-        )
-        ds_a    = ds_a.rename({var_a: "value"}) if var_a != "value" else ds_a
-        label_a = input(
-            default_value=up_a.name,
-            type="text",
-            placeholder="Label A",
-            key="la",
-        )
-    else:
-        yr_a_s = input(
-            default_value="2000",
-            type="text",
-            placeholder="Year A",
-            key="yas",
-        )
-        try:
-            yr_a_int = int(yr_a_s)
-        except ValueError:
-            st.error("Enter a valid year e.g. 2000")
-            st.stop()
-        label_a = input(
-            default_value=f"Year {yr_a_int}",
-            type="text",
-            placeholder="Label A",
-            key="la",
-        )
-        ds_a = generate_dataset(variable, yr_a_int, 1)
-    # ── DATASET B ──
-    st.markdown("---")
-    st.markdown("""
+        up_a = st.file_uploader("Upload Dataset A (.nc)", type=["nc"], key="up_a")
+        if up_a:
+            ds_a    = load_nc(up_a.read(), up_a.name)
+            nvars   = list(ds_a.data_vars)
+            var_a   = select(
+                label="Variable A",
+                options=nvars,
+                key="va",
+            )
+            ds_a    = ds_a.rename({var_a: "value"}) if var_a != "value" else ds_a
+            label_a = input(
+                default_value=up_a.name,
+                type="text",
+                placeholder="Label A",
+                key="la",
+            )
+        else:
+            yr_a_s = input(
+                default_value="2000",
+                type="text",
+                placeholder="Year A",
+                key="yas",
+            )
+            try:
+                yr_a_int = int(yr_a_s or "2000")
+            except (ValueError, TypeError):
+                st.error("Enter a valid year e.g. 2000")
+                return
+            label_a = input(
+                default_value=f"Year {yr_a_int}",
+                type="text",
+                placeholder="Label A",
+                key="la",
+            ) or f"Year {yr_a_int}"
+            ds_a = generate_dataset(variable, yr_a_int, 1)
+        # ── DATASET B ──
+        st.markdown("---")
+        st.markdown("""
     <div style='border-left:3px solid #ff6b35; padding:0.4rem 0.8rem;
                 background:rgba(255,107,53,0.06); border-radius:0 8px 8px 0; margin-bottom:0.5rem;'>
       <span style='font-family:"Bebas Neue",sans-serif; font-size:1.1rem;
                    letter-spacing:2px; color:#ff6b35;'>🟡 DATASET B</span>
     </div>
-    """, unsafe_allow_html=True)
-    ds_b    = None
-    label_b = "Dataset B"
+        """, unsafe_allow_html=True)
+        ds_b    = None
+        label_b = "Dataset B"
 
-    up_b = st.file_uploader("Upload Dataset B (.nc)", type=["nc"], key="up_b")
-    if up_b:
-        ds_b    = load_nc(up_b.read(), up_b.name)
-        nvars   = list(ds_b.data_vars)
-        var_b   = select(
-            label="Variable B",
-            options=nvars,
-            key="vb",
-        )
-        ds_b    = ds_b.rename({var_b: "value"}) if var_b != "value" else ds_b
-        label_b = input(
-            default_value=up_b.name,
-            type="text",
-            placeholder="Label B",
-            key="lb",
-        )
-    else:
-        yr_b_s = input(
-            default_value="2020",
-            type="text",
-            placeholder="Year B",
-            key="ybs",
-        )
-        try:
-            yr_b_int = int(yr_b_s)
-        except ValueError:
-            st.error("Enter a valid year e.g. 2020")
-            st.stop()
-        label_b = input(
-            default_value=f"Year {yr_b_int}",
-            type="text",
-            placeholder="Label B",
-            key="lb",
-        )
-        ds_b = generate_dataset(variable, yr_b_int, 1) 
+        up_b = st.file_uploader("Upload Dataset B (.nc)", type=["nc"], key="up_b")
+        if up_b:
+            ds_b    = load_nc(up_b.read(), up_b.name)
+            nvars   = list(ds_b.data_vars)
+            var_b   = select(
+                label="Variable B",
+                options=nvars,
+                key="vb",
+            )
+            ds_b    = ds_b.rename({var_b: "value"}) if var_b != "value" else ds_b
+            label_b = input(
+                default_value=up_b.name,
+                type="text",
+                placeholder="Label B",
+                key="lb",
+            )
+        else:
+            yr_b_s = input(
+                default_value="2020",
+                type="text",
+                placeholder="Year B",
+                key="ybs",
+            )
+            try:
+                yr_b_int = int(yr_b_s or "2020")
+            except (ValueError, TypeError):
+                st.error("Enter a valid year e.g. 2020")
+                return
+            label_b = input(
+                default_value=f"Year {yr_b_int}",
+                type="text",
+                placeholder="Label B",
+                key="lb",
+            ) or f"Year {yr_b_int}"
+            ds_b = generate_dataset(variable, yr_b_int, 1)
 
-    st.markdown("---")
-    run = ui.button(
-        text="⚡ RUN COMPARISON",
-        key="run_comparison_button",
-    )
+        st.markdown("---")
+        run = ui.button(
+            text="⚡ RUN COMPARISON",
+            key="run_comparison_button",
+        )
 
 
-# ══════════════════════════════════════════════════════════════
-# MAIN PAGE
-# ══════════════════════════════════════════════════════════════
-st.markdown("""
+    # ══════════════════════════════════════════════════════════════
+    # MAIN PAGE
+    # ══════════════════════════════════════════════════════════════
+    st.markdown("""
 <div class='page-hero'>
   <p class='page-title'>CLIMADUEL</p>
   <p class='page-sub'>Full-spectrum comparison · spatial · temporal · statistical · seasonal</p>
 </div>
 """, unsafe_allow_html=True)
 
-if not run:
-    st.markdown("""
+    if not run:
+        st.markdown("""
     <div style='text-align:center; padding:4rem 2rem; color:#5a6a8a; font-family:"DM Sans",sans-serif;'>
       <div style='font-size:4rem; margin-bottom:1rem;'>🔬</div>
       <div style='font-size:1.2rem; margin-bottom:0.5rem; color:#c8d4f0;'>
@@ -887,14 +882,14 @@ if not run:
       </div>
     </div>
     """, unsafe_allow_html=True)
-    st.stop()
+        return
 
-# ── COMPUTE ──
-with st.spinner("🔬 Running full comparison analysis..."):
-    r = compute_full_comparison(ds_a, ds_b, label_a, label_b)
+    # ── COMPUTE ──
+    with st.spinner("🔬 Running full comparison analysis..."):
+        r = compute_full_comparison(ds_a, ds_b, label_a, label_b)
 
-# ── BADGES ──
-st.markdown(f"""
+    # ── BADGES ──
+    st.markdown(f"""
 <div style='margin-bottom:1rem;'>
   <span class='badge badge-a'>🔵 {label_a}</span>
   <span style='color:#5a6a8a; font-family:"DM Sans"; font-size:1rem;'>vs</span>
@@ -905,15 +900,15 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── METRIC CARDS ──
-metric_cols = st.columns(4)
-for col, (lbl, va, vb, unit) in zip(metric_cols, [
+    # ── METRIC CARDS ──
+    metric_cols = st.columns(4)
+    for col, (lbl, va, vb, unit) in zip(metric_cols, [
     ("Global Mean",   f"{r['a']['mean']:.2f}",   f"{r['b']['mean']:.2f}",   r["units"]),
     ("Std Deviation", f"{r['a']['std']:.3f}",    f"{r['b']['std']:.3f}",    r["units"]),
     ("Max Value",     f"{r['a']['maximum']:.2f}", f"{r['b']['maximum']:.2f}", r["units"]),
     ("Trend",         f"{r['a']['trend']:+.3f}",  f"{r['b']['trend']:+.3f}",  f"{r['units']}/decade"),
 ]):
-    col.markdown(f"""
+        col.markdown(f"""
     <div class='ds-card ds-card-a'>
       <p class='ds-label ds-label-a'>🔵 {lbl} — A</p>
       <p class='ds-value'>{va}</p><p class='ds-sub'>{unit}</p>
@@ -924,79 +919,79 @@ for col, (lbl, va, vb, unit) in zip(metric_cols, [
     </div>
     """, unsafe_allow_html=True)
 
-st.divider()
+    st.divider()
 
-# ── SECTION 1: TEMPORAL ──
-st.markdown("<div class='sec-head'>📈 TEMPORAL ANALYSIS</div>", unsafe_allow_html=True)
-st.plotly_chart(chart_annual_trend(r), use_container_width=True)
-c1, c2 = st.columns(2)
-with c1:
-    st.plotly_chart(chart_seasonal(r), use_container_width=True)
-with c2:
-    st.plotly_chart(chart_radar(r), use_container_width=True)
+    # ── SECTION 1: TEMPORAL ──
+    st.markdown("<div class='sec-head'>📈 TEMPORAL ANALYSIS</div>", unsafe_allow_html=True)
+    st.plotly_chart(chart_annual_trend(r), use_container_width=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.plotly_chart(chart_seasonal(r), use_container_width=True)
+    with c2:
+        st.plotly_chart(chart_radar(r), use_container_width=True)
 
-# ── SECTION 2: SPATIAL & DISTRIBUTION ──
-st.markdown("<div class='sec-head'>🌐 SPATIAL & DISTRIBUTION</div>", unsafe_allow_html=True)
-c3, c4 = st.columns(2)
-with c3:
-    st.plotly_chart(chart_zonal(r), use_container_width=True)
-with c4:
-    st.plotly_chart(chart_box(r), use_container_width=True)
-c5, c6 = st.columns(2)
-with c5:
-    st.plotly_chart(chart_histogram(r), use_container_width=True)
-with c6:
-    st.plotly_chart(chart_cdf(r), use_container_width=True)
+    # ── SECTION 2: SPATIAL & DISTRIBUTION ──
+    st.markdown("<div class='sec-head'>🌐 SPATIAL & DISTRIBUTION</div>", unsafe_allow_html=True)
+    c3, c4 = st.columns(2)
+    with c3:
+        st.plotly_chart(chart_zonal(r), use_container_width=True)
+    with c4:
+        st.plotly_chart(chart_box(r), use_container_width=True)
+    c5, c6 = st.columns(2)
+    with c5:
+        st.plotly_chart(chart_histogram(r), use_container_width=True)
+    with c6:
+        st.plotly_chart(chart_cdf(r), use_container_width=True)
 
-# ── SECTION 3: PIE CHARTS ──
-st.markdown("<div class='sec-head'>🥧 PROPORTIONAL INSIGHTS</div>", unsafe_allow_html=True)
-c7, c8 = st.columns(2)
-with c7:
-    st.plotly_chart(chart_stats_pie(r), use_container_width=True)
-with c8:
-    st.plotly_chart(chart_seasonal_pie(r), use_container_width=True)
+    # ── SECTION 3: PIE CHARTS ──
+    st.markdown("<div class='sec-head'>🥧 PROPORTIONAL INSIGHTS</div>", unsafe_allow_html=True)
+    c7, c8 = st.columns(2)
+    with c7:
+        st.plotly_chart(chart_stats_pie(r), use_container_width=True)
+    with c8:
+        st.plotly_chart(chart_seasonal_pie(r), use_container_width=True)
 
-fig_score, wins_a, wins_b, score_details = chart_stats_donut(r)
-cs1, cs2 = st.columns([1, 1.4])
-with cs1:
-    st.plotly_chart(fig_score, use_container_width=True)
-with cs2:
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("""
+    fig_score, wins_a, wins_b, score_details = chart_stats_donut(r)
+    cs1, cs2 = st.columns([1, 1.4])
+    with cs1:
+        st.plotly_chart(fig_score, use_container_width=True)
+    with cs2:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("""
     <div style='font-family:"Bebas Neue",sans-serif; font-size:1.1rem;
                 letter-spacing:1.5px; color:#c8d4f0; margin-bottom:0.8rem;'>
     METRIC BREAKDOWN
     </div>""", unsafe_allow_html=True)
-    for icon, detail in zip(["🌡️", "📉", "🚀", "↔️"], score_details):
-        st.markdown(f"""
+        for icon, detail in zip(["🌡️", "📉", "🚀", "↔️"], score_details):
+            st.markdown(f"""
         <div style='background:#141b2d; border:1px solid #1e2d4a; border-radius:10px;
                     padding:0.7rem 1rem; margin-bottom:0.5rem;
                     font-family:"DM Sans"; font-size:0.88rem; color:#c8d4f0;'>
           {icon} {detail}
         </div>""", unsafe_allow_html=True)
 
-# ── SECTION 4: INSIGHTS ──
-st.markdown("<div class='sec-head'>🧠 DATA INSIGHTS</div>", unsafe_allow_html=True)
-insights = generate_insights(r)
-for i in range(0, len(insights), 2):
-    ci1, ci2 = st.columns(2)
-    for col, idx in [(ci1, i), (ci2, i + 1)]:
-        if idx < len(insights):
-            ins = insights[idx]
-            col.markdown(f"""
+    # ── SECTION 4: INSIGHTS ──
+    st.markdown("<div class='sec-head'>🧠 DATA INSIGHTS</div>", unsafe_allow_html=True)
+    insights = generate_insights(r)
+    for i in range(0, len(insights), 2):
+        ci1, ci2 = st.columns(2)
+        for col, idx in [(ci1, i), (ci2, i + 1)]:
+            if idx < len(insights):
+                ins = insights[idx]
+                col.markdown(f"""
             <div class='insight-card'>
               <div class='insight-icon'>{ins['icon']}</div>
               <p class='insight-title'>{ins['title']}</p>
               <p class='insight-body'>{ins['body']}</p>
             </div>""", unsafe_allow_html=True)
 
-# ── SECTION 5: VERDICT ──
-winner = label_a if wins_a >= wins_b else label_b
-dm     = abs(r["delta_mean"])
-dt     = abs(r["delta_trend"])
-w_col  = "#00e5ff" if winner == label_a else "#ff6b35"
+    # ── SECTION 5: VERDICT ──
+    winner = label_a if wins_a >= wins_b else label_b
+    dm     = abs(r["delta_mean"])
+    dt     = abs(r["delta_trend"])
+    w_col  = "#00e5ff" if winner == label_a else "#ff6b35"
 
-st.markdown(f"""
+    st.markdown(f"""
 <div class='verdict'>
   <p class='verdict-title'>⚖️ FINAL VERDICT</p>
   <p class='verdict-body'>
@@ -1017,7 +1012,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
+    st.markdown("""
 <div style='text-align:center; color:#2a3a5a; font-family:"DM Sans"; font-size:0.75rem; margin-top:2rem; padding:1rem;'>
   ClimaDuel · PyClimaExplorer · Technex '26, IIT (BHU)
 </div>
