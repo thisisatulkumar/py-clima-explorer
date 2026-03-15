@@ -115,68 +115,68 @@ def daily_global_mean(da, meta):
     return df.sort_values("date").reset_index(drop=True)
 
 
-# ── Main page entry point ──────────────────────────────────────────────────────
-def app():
+    # ── Main page entry point ──────────────────────────────────────────────────────
+def analysis_page():
     # ── Custom CSS ─────────────────────────────────────────────────────────────
     st.markdown("""
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap');
 
-  html, body, [class*="css"] {
-      font-family: 'DM Sans', sans-serif;
-      background-color: #0d1117;
-      color: #f0f6fc;
-  }
-  .stApp { background-color: #0d1117; }
+html, body, [class*="css"] {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #0d1117;
+    color: #f0f6fc;
+}
+.stApp { background-color: #0d1117; }
 
-  h1, h2, h3 {
-      font-family: 'Space Mono', monospace;
-      color: #58a6ff;
-      letter-spacing: -0.5px;
-  }
-  .block-container { padding-top: 1.5rem; padding-bottom: 2rem; }
+h1, h2, h3 {
+    font-family: 'Space Mono', monospace;
+    color: #58a6ff;
+    letter-spacing: -0.5px;
+}
+.block-container { padding-top: 1.5rem; padding-bottom: 2rem; }
 
-  /* Sidebar */
-  section[data-testid="stSidebar"] {
-      background: #161b22;
-      border-right: 1px solid #30363d;
-  }
-  section[data-testid="stSidebar"] h2 { font-size: 0.85rem; color: #c9d1d9; text-transform: uppercase; letter-spacing: 1px; }
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: #161b22;
+    border-right: 1px solid #30363d;
+}
+section[data-testid="stSidebar"] h2 { font-size: 0.85rem; color: #c9d1d9; text-transform: uppercase; letter-spacing: 1px; }
 
-  /* Metrics */
-  [data-testid="metric-container"] {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 12px 16px;
-  }
-  [data-testid="metric-container"] label { color: #c9d1d9 !important; font-size: 0.75rem !important; }
-  [data-testid="metric-container"] [data-testid="stMetricValue"] { color: #58a6ff !important; font-family: 'Space Mono', monospace; }
+/* Metrics */
+[data-testid="metric-container"] {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+[data-testid="metric-container"] label { color: #c9d1d9 !important; font-size: 0.75rem !important; }
+[data-testid="metric-container"] [data-testid="stMetricValue"] { color: #58a6ff !important; font-family: 'Space Mono', monospace; }
 
-  /* Tabs */
-  .stTabs [data-baseweb="tab-list"] { gap: 8px; background: transparent; border-bottom: 1px solid #30363d; }
-  .stTabs [data-baseweb="tab"] {
-      background: #161b22; border: 1px solid #30363d; border-radius: 6px 6px 0 0;
-      color: #8b949e; font-family: 'Space Mono', monospace; font-size: 0.8rem;
-  }
-  .stTabs [aria-selected="true"] { background: #1f2937 !important; color: #58a6ff !important; border-color: #58a6ff !important; }
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] { gap: 8px; background: transparent; border-bottom: 1px solid #30363d; }
+.stTabs [data-baseweb="tab"] {
+    background: #161b22; border: 1px solid #30363d; border-radius: 6px 6px 0 0;
+    color: #8b949e; font-family: 'Space Mono', monospace; font-size: 0.8rem;
+}
+.stTabs [aria-selected="true"] { background: #1f2937 !important; color: #58a6ff !important; border-color: #58a6ff !important; }
 
-  /* Selectbox / multiselect */
-  .stSelectbox label, .stMultiSelect label, .stDateInput label, .stSlider label { color: #c9d1d9; font-size: 0.8rem; }
-  div[data-baseweb="select"] > div { background-color: #161b22 !important; border-color: #30363d !important; color: #f0f6fc !important; }
+/* Selectbox / multiselect */
+.stSelectbox label, .stMultiSelect label, .stDateInput label, .stSlider label { color: #c9d1d9; font-size: 0.8rem; }
+div[data-baseweb="select"] > div { background-color: #161b22 !important; border-color: #30363d !important; color: #f0f6fc !important; }
 
-  /* Divider */
-  hr { border-color: #30363d; }
+/* Divider */
+hr { border-color: #30363d; }
 
-  /* Info/warning boxes */
-  .stAlert { border-radius: 8px; }
+/* Info/warning boxes */
+.stAlert { border-radius: 8px; }
 
-  .badge {
-      display: inline-block; background: #1f3a5f; color: #58a6ff;
-      border: 1px solid #30363d; border-radius: 20px;
-      padding: 2px 10px; font-size: 0.72rem; font-family: 'Space Mono', monospace;
-      margin: 2px 4px;
-  }
+.badge {
+    display: inline-block; background: #1f3a5f; color: #58a6ff;
+    border: 1px solid #30363d; border-radius: 20px;
+    padding: 2px 10px; font-size: 0.72rem; font-family: 'Space Mono', monospace;
+    margin: 2px 4px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -235,10 +235,28 @@ def app():
     # TAB 1 – TIME SERIES
     # ════════════════════════════════════════════════════════════════════════════
     with tab_ts:
-        st.markdown("### Daily Global-Mean Time Series")
-        st.markdown("<p style='color:#c9d1d9;font-size:0.85rem;'>Spatial average over all grid points · 00:00 UTC per day</p>", unsafe_allow_html=True)
+        st.markdown("### Time Series")
 
-        ctrl_ts1, ctrl_ts2 = st.columns([2, 3])
+        # ── Mode toggle ────────────────────────────────────────────────────────
+        ts_mode = st.radio(
+            "View mode",
+            options=["🌐 Global Mean", "📍 Point Location"],
+            horizontal=True,
+            key="ts_mode",
+        )
+        use_point = ts_mode == "📍 Point Location"
+
+        if use_point:
+            st.markdown("<p style='color:#c9d1d9;font-size:0.85rem;'>Values at a chosen grid point · 00:00 UTC per day</p>", unsafe_allow_html=True)
+        else:
+            st.markdown("<p style='color:#c9d1d9;font-size:0.85rem;'>Spatial average over all grid points · 00:00 UTC per day</p>", unsafe_allow_html=True)
+
+        # ── Controls ───────────────────────────────────────────────────────────
+        if use_point:
+            ctrl_ts1, ctrl_ts2, ctrl_ts3, ctrl_ts4 = st.columns([2, 2, 2, 3])
+        else:
+            ctrl_ts1, ctrl_ts4 = st.columns([2, 3])
+
         with ctrl_ts1:
             st.markdown("**Date Range**")
             ts_start = st.date_input(
@@ -258,7 +276,16 @@ def app():
             if ts_start > ts_end:
                 st.warning("Start date must be ≤ end date.")
                 ts_start, ts_end = min_date, max_date
-        with ctrl_ts2:
+
+        if use_point:
+            with ctrl_ts2:
+                st.markdown("**Location**")
+                ts_lat = st.number_input("Latitude  (-90 to 90)",  value=25.3, step=0.5, key="ts_lat")
+            with ctrl_ts3:
+                st.markdown("&nbsp;", unsafe_allow_html=True)
+                ts_lon = st.number_input("Longitude (-180 to 180)", value=82.0, step=0.5, key="ts_lon")
+
+        with ctrl_ts4:
             st.markdown("**Variables**")
             var_labels = {k: VAR_META[k]["label"] for k in available_vars}
             selected_vars_ts = st.multiselect(
@@ -279,12 +306,32 @@ def app():
             else:
                 fig = go.Figure()
 
+            ts_actual_coords = {}
             for i, vk in enumerate(selected_vars_ts):
                 meta = VAR_META[vk]
                 da   = get_var_da(datasets, vk)
-                df   = daily_global_mean(da, meta)
-                mask = (df["date"] >= ts_start) & (df["date"] <= ts_end)
-                df   = df[mask]
+
+                if use_point:
+                    lat_name = next((d for d in da.dims if "lat" in d.lower()), None)
+                    lon_name = next((d for d in da.dims if "lon" in d.lower()), None)
+                    if lat_name is None or lon_name is None:
+                        st.error(f"Cannot identify lat/lon dimensions for {meta['label']}.")
+                        continue
+                    da_point = da.sel({lat_name: ts_lat, lon_name: ts_lon}, method="nearest")
+                    ts_actual_coords[vk] = (float(da_point[lat_name].values), float(da_point[lon_name].values))
+                    time_dim_ts = get_time_dim(da_point)
+                    df = da_point.to_series().reset_index()
+                    if time_dim_ts in df.columns:
+                        df = df.rename(columns={time_dim_ts: "time"})
+                    df = df[["time", df.columns[-1]]].copy()
+                    df.columns = ["time", "value"]
+                    df["value"] = meta["convert"](df["value"])
+                    df["date"]  = pd.to_datetime(df["time"]).dt.date
+                    df = df[(df["date"] >= ts_start) & (df["date"] <= ts_end)].sort_values("date")
+                else:
+                    df   = daily_global_mean(da, meta)
+                    mask = (df["date"] >= ts_start) & (df["date"] <= ts_end)
+                    df   = df[mask]
 
                 trace = go.Scatter(
                     x=df["date"],
@@ -317,6 +364,14 @@ def app():
             )
             st.plotly_chart(fig, use_container_width=True)
 
+            # Show snapped coordinates in point mode
+            if use_point:
+                for vk in selected_vars_ts:
+                    if vk in ts_actual_coords:
+                        meta = VAR_META[vk]
+                        alat, alon = ts_actual_coords[vk]
+                        st.caption(f"**{meta['label']}** — nearest grid point: {alat:.2f}°N, {alon:.2f}°E")
+
 
     # ════════════════════════════════════════════════════════════════════════════
     # TAB 2 – SPATIAL HEATMAP (time fixed, space varies)
@@ -334,16 +389,13 @@ def app():
                 key="hm_var",
             )
         with ctrl_col2:
-            date_idx = st.slider(
-                "Select day",
-                min_value=0,
-                max_value=len(all_dates) - 1,
-                value=0,
-                format="",
-                key="date_slider",
+            selected_heatmap_date = st.date_input(
+                "Select date",
+                value=min_date,
+                min_value=min_date,
+                max_value=max_date,
+                key="hm_date",
             )
-            selected_heatmap_date = all_dates[date_idx]
-            st.caption(f"📅 Selected: **{selected_heatmap_date}**")
 
         da   = get_var_da(datasets, heatmap_var)
         meta = VAR_META[heatmap_var]
