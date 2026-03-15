@@ -75,7 +75,7 @@ HEADER_CSS = """
     border-radius: 0.75rem !important;
 }
 [data-testid="stChatInput"] textarea {
-    color: #e8ede8 !important;
+    color: black !important;
     font-family: 'DM Sans', sans-serif !important;
     background: transparent !important;
 }
