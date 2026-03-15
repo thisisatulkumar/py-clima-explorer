@@ -60,7 +60,6 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     display: flex; align-items: center; justify-content: space-between;
     padding: 1.4rem 4rem;
     background: linear-gradient(to bottom, rgba(5,10,14,0.95) 0%, transparent 100%);
-    backdrop-filter: blur(3px);
 }
 .cv-nav-logo {
     font-family:  sans-serif;
