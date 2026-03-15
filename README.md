@@ -12,12 +12,19 @@ It has the required deep analysis tools for researchers to have a quick look at 
 Also, it contains interactive 3D visualizations, story mode and an AI chatbot for the general public interested in climate.
 
 ## Features
+![Home Page](./assets/screenshots/1.jpeg)
 - **Interactive Data Analysis:** Explore climate data through dynamic filters and plots.
+![Interactive Data Analysis](./assets/screenshots/2.jpeg)
 - **Spatial and Temporal Visualization:** Geographic distribution of variables using time-series plots and global heatmaps
+![Spatial and Temporal Visualization](./assets/screenshots/3.jpeg)
 - **3D Globe:** Visualize the change of temperature, pressure, etc. on the globe throughout the last ~70 years
+![3D Globe](./assets/screenshots/4.jpeg)
 - **Dataset Comparison:** Select datasets from two different years to get a very detailed comparison
+![Dataset Comparison](./assets/screenshots/5.jpeg)
 - **Story Mode:** Follow guided narratives highlighting major climate events with timelines and explanations
+![Story Mode](./assets/screenshots/6.jpeg)
 - **AI Climate Chatbot:** An AI assistant that answers questions and explains insights from climate datasets
+![AI Climate Chatbot](./assets/screenshots/7.jpeg)
 
 ## Tech Stack
 - **Streamlit:** Rapid framework for building interactive data-driven web applications directly in Python
