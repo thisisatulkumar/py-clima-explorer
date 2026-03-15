@@ -29,14 +29,10 @@ def earth_globe_page():
 
     # ─── SIDEBAR ──────────────────────────────────────────────────
     with st.sidebar:
-        st.markdown("## 🛰️ EARTH PULSE")
-        st.markdown("*Climate Intelligence Platform*")
-        st.divider()
-
         st.markdown("### 🌡️ Climate Variable")
         variable = st.selectbox("Primary Variable", [
-            "🌡️ Temperature",
             "💧 Precipitation",
+            "🌡️ Temperature",
             "💨 Wind Speed",
         ])
 
@@ -47,12 +43,6 @@ def earth_globe_page():
         month_idx = st.slider("Month", 1, 12, 7, format="%d")
         month = MONTHS[month_idx-1]
 
-        st.markdown("### 🎨 Heatmap Style")
-        heatmap_opacity = st.slider("Heatmap Opacity", 0.1, 0.85, 0.55, 0.01,
-                                     help="Lower = more Earth visible")
-        blur_px = st.slider("Smoothing Blur (px)", 0, 50, 22)
-        hm_blend = st.selectbox("Blend Mode", ["Overlay","Multiply","Screen","Hard Light"])
-
         st.markdown("### 🌐 Globe Settings")
         base_map = st.selectbox("Earth Texture", [
             "🛰️ NASA Blue Marble",
@@ -60,14 +50,14 @@ def earth_globe_page():
             "🏔️ Topographic",
             "🌊 Ocean Floor",
         ])
-        show_clouds  = st.checkbox("Cloud Layer",        value=True)
-        show_atmo    = st.checkbox("Atmosphere Glow",    value=True)
-        show_stars   = st.checkbox("Starfield",          value=True)
-        show_grid    = st.checkbox("Lat/Lon Grid",       value=True)
-        show_cities  = st.checkbox("City Labels",        value=True)
-        show_wind    = st.checkbox("Wind Particles",     value=True)
-        auto_spin    = st.checkbox("Auto-Rotate",        value=True)
-        night_mode   = st.checkbox("Night Shadow",       value=True)
+        show_clouds  = True
+        show_atmo    = True
+        show_stars   = True
+        show_grid    = True
+        show_cities  = True
+        show_wind    = True
+        auto_spin    = True
+        night_mode   = True
 
         st.markdown("### 📍 Region Focus")
         region = st.selectbox("Jump To", [
@@ -75,8 +65,6 @@ def earth_globe_page():
             "🌍 Africa","🌍 Europe","❄️ Arctic","🧊 Antarctic","🇮🇳 South Asia",
         ])
         st.divider()
-        live = st.toggle("🔴 Live Feed", value=False)
-        if live: st.success("🟢 ERA5 0.25° stream active")
 
     # ─── DATA GENERATION ──────────────────────────────────────────
     GRID_H, GRID_W = 180, 360
@@ -208,13 +196,9 @@ def earth_globe_page():
     }
     rc=region_cfg[region]
 
-    blend_map={"Overlay":"overlay","Multiply":"multiply",
-               "Screen":"screen","Hard Light":"hard-light"}
-    blend_mode=blend_map[hm_blend]
-
     # ─── HEADER ───────────────────────────────────────────────────
     st.markdown(f"**{variable}** &nbsp;·&nbsp; **{month} {year}** &nbsp;·&nbsp; "
-                f"Opacity **{heatmap_opacity}** &nbsp;·&nbsp; {base_map}")
+                f"&nbsp;·&nbsp; {base_map}")
 
     c1,c2,c3,c4,c5=st.columns(5)
     c1.metric("🌡️ Temp",   f"{14.2+(year-1950)*0.018:.1f}°C",  f"+{(year-1950)*0.018:.2f}°C")
@@ -323,7 +307,6 @@ def earth_globe_page():
     /* ── Heatmap canvas (CSS blend over iframe) ── */
     #hm-overlay{{
       position:absolute;inset:0;pointer-events:none;z-index:10;
-      mix-blend-mode:{blend_mode};opacity:{heatmap_opacity};
     }}
     </style>
     </head><body>
@@ -340,7 +323,6 @@ def earth_globe_page():
       </div>
       <div>📅 <b>{month} {year}</b></div>
       <div>🌐 {region}</div>
-      <div>🎨 Blend: {hm_blend} · {heatmap_opacity}</div>
       <hr class="sep">
       <div id="probe">Hover globe to inspect</div>
       <div class="src">Source: NOAA · ERA5 · NASA · 1°×1° grid</div>
@@ -368,7 +350,6 @@ def earth_globe_page():
     <!-- Time bar -->
     <div class="gl" id="tbar">
       <div class="dot"></div>
-      <span>Live Feed</span>
       <span class="sep2">|</span>
       <span id="clk">--:--:-- UTC</span>
       <span class="sep2">|</span>
@@ -389,7 +370,6 @@ def earth_globe_page():
       bumpTex:   "{bump_tex}",
       specTex:   "{spec_tex}",
       cloudTex:  "{cloud_tex}",
-      hmBlur:    {blur_px},
       autoSpin:  {'true' if auto_spin else 'false'},
       showAtmo:  {'true' if show_atmo else 'false'},
       showStars: {'true' if show_stars else 'false'},
