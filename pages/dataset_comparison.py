@@ -243,7 +243,6 @@ def chart_seasonal(r):
     )
     return fig
 
-
 def chart_histogram(r):
     fig = go.Figure()
     for key, col, lbl in [("a", _CA, r["label_a"]), ("b", _CB, r["label_b"])]:
@@ -579,7 +578,7 @@ def dataset_comparison_page():
         background:linear-gradient(90deg,var(--col-a),#a78bfa,var(--col-b));
         -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1; }
     .page-sub { font-family:'DM Sans',sans-serif; color:var(--col-dim); font-size:0.95rem; margin:0.5rem 0 0 0; }
-    .ctrl-panel { background:#0e1420; border:1px solid #1e2d4a; border-radius:14px; padding:1.5rem 2rem; margin-bottom:1.5rem; }
+    .ctrl-panel { background: transparent; border:1px solid #1e2d4a; border-radius:14px; padding:1.5rem 2rem; margin-bottom:1.5rem; }
     .ds-card { border-radius:14px; padding:1.2rem 1.5rem; margin-bottom:0.8rem; border:1px solid; }
     .ds-card-a { background:linear-gradient(135deg,rgba(0,229,255,0.08),rgba(0,229,255,0.03)); border-color:rgba(0,229,255,0.3); }
     .ds-card-b { background:linear-gradient(135deg,rgba(255,107,53,0.08),rgba(255,107,53,0.03)); border-color:rgba(255,107,53,0.3); }
@@ -605,15 +604,6 @@ def dataset_comparison_page():
     </style>
     """, unsafe_allow_html=True)
 
-    # ── HERO ─────────────────────────────────────────────────────────────────
-    st.markdown("""
-    <div class='page-hero'>
-      <p class='page-title'>CLIMADUEL</p>
-      <p class='page-sub'>Full-spectrum comparison · spatial · temporal · statistical · seasonal</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ── CONTROLS (moved from sidebar to main page) ────────────────────────────
     st.markdown("<div class='ctrl-panel'>", unsafe_allow_html=True)
 
     st.markdown("### ⚙️ Configure Comparison")
@@ -623,41 +613,25 @@ def dataset_comparison_page():
 
     with col_a:
         st.markdown("<span style='color:#00e5ff;font-weight:700;'>🔵 DATASET A</span>", unsafe_allow_html=True)
-        up_a = st.file_uploader("Upload Dataset A (.nc)", type=["nc"], key="up_a")
-        if up_a:
-            ds_a   = load_nc(up_a.read(), up_a.name)
-            nvars  = list(ds_a.data_vars)
-            var_a  = st.selectbox("Variable A", nvars, key="va")
-            ds_a   = ds_a.rename({var_a: "value"}) if var_a != "value" else ds_a
-            label_a = st.text_input("Label A", value=up_a.name, key="la")
-        else:
-            yr_a = st.text_input("Year A", value="2000", key="yas")
-            try:
-                yr_a_int = int(yr_a)
-            except ValueError:
-                st.error("Enter a valid year e.g. 2000")
-                st.stop()
-            label_a = st.text_input("Label A", value=f"Year {yr_a_int}", key="la")
-            ds_a = generate_dataset(variable, yr_a_int, 1)
+        yr_a = st.text_input("Year A", value="2000", key="yas")
+        try:
+            yr_a_int = int(yr_a)
+        except ValueError:
+            st.error("Enter a valid year e.g. 2000")
+            st.stop()
+        label_a = f"Year {yr_a_int}"
+        ds_a = generate_dataset(variable, yr_a_int, 1)
 
     with col_b:
         st.markdown("<span style='color:#ff6b35;font-weight:700;'>🟡 DATASET B</span>", unsafe_allow_html=True)
-        up_b = st.file_uploader("Upload Dataset B (.nc)", type=["nc"], key="up_b")
-        if up_b:
-            ds_b   = load_nc(up_b.read(), up_b.name)
-            nvars  = list(ds_b.data_vars)
-            var_b  = st.selectbox("Variable B", nvars, key="vb")
-            ds_b   = ds_b.rename({var_b: "value"}) if var_b != "value" else ds_b
-            label_b = st.text_input("Label B", value=up_b.name, key="lb")
-        else:
-            yr_b = st.text_input("Year B", value="2020", key="ybs")
-            try:
-                yr_b_int = int(yr_b)
-            except ValueError:
-                st.error("Enter a valid year e.g. 2020")
-                st.stop()
-            label_b = st.text_input("Label B", value=f"Year {yr_b_int}", key="lb")
-            ds_b = generate_dataset(variable, yr_b_int, 1)
+        yr_b = st.text_input("Year B", value="2020", key="ybs")
+        try:
+            yr_b_int = int(yr_b)
+        except ValueError:
+            st.error("Enter a valid year e.g. 2020")
+            st.stop()
+        label_b = f"Year {yr_b_int}"
+        ds_b = generate_dataset(variable, yr_b_int, 1)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
