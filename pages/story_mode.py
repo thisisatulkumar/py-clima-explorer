@@ -120,6 +120,7 @@ def story_mode_page():
                     st.session_state.s_finished = False
         except: pass
         st.query_params.clear()
+        st.rerun()
 
     ev = EVENTS[st.session_state.s_idx]
 

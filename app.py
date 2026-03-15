@@ -9,26 +9,30 @@ from pages.story_mode import story_mode_page
 
 import streamlit as st
 
-st.set_page_config(page_title="PyClimaExplorer", page_icon="🌍", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="PyClimaExplorer", page_icon="🌍", layout="wide", initial_sidebar_state="expanded")
 
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
 # ── CONDITIONAL SIDEBAR + GLOBAL STYLES ──────────────────────────────────────
 # Sidebar is visible only on the globe page; hidden everywhere else.
-_hide_sidebar = "" if st.session_state.page == "globe" else """
-[data-testid="stSidebar"],
-[data-testid="collapsedControl"],
-[data-testid="stSidebarNav"] { display: none !important; }
-"""
+if st.session_state.page == "globe":
+    _sidebar_css = "[data-testid='stSidebarNav'] { display: none !important; }"
+else:
+    _sidebar_css = """
+    [data-testid="stSidebar"],
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarNav"] { display: none !important; }
+    [data-testid="stAppViewContainer"] { padding-left: 0 !important; }
+    """
 
 st.markdown(f"""
 <style>
-{_hide_sidebar}
+{_sidebar_css}
 [data-testid="stHeader"],
 [data-testid="stDecoration"],
 #MainMenu, footer, header, .stDeployButton {{ display: none !important; }}
-.block-container {{ padding: 1rem 2rem 2rem !important; max-width: 100% !important; }}
+.block-container {{ padding: 0 !important; max-width: 100% !important; }}
 html, body, .stApp {{ background: #050a0e !important; color: #e8ede8; font-family: 'DM Sans', sans-serif; }}
 </style>
 """, unsafe_allow_html=True)
