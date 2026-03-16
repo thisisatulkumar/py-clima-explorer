@@ -89,9 +89,6 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-### Visualizations
-[ENTER THIS FAST]
-
 ## Future Improvements
 - **Support for Multiple Climate Datasets:** Enable integration of additional datasets such as CMIP6, NASA climate data, etc.
 - **Advanced Climate Analytics:** Add anomaly detection, trend analysis, and predictive modeling using machine learning
